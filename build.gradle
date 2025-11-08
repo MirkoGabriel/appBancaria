@@ -20,6 +20,16 @@ configurations {
     }
 }
 
+// Configuración para que MapStruct y Lombok trabajen juntos
+tasks.named('compileJava') {
+    options.annotationProcessorPath = configurations.annotationProcessor
+    options.compilerArgs += [
+        '-Amapstruct.defaultComponentModel=spring',
+        '-Amapstruct.suppressGeneratorTimestamp=true',
+        '-Amapstruct.verbose=true'
+    ]
+}
+
 repositories {
     mavenCentral()
 }
@@ -37,6 +47,12 @@ dependencies {
 
     // --- Database ---
     runtimeOnly 'com.h2database:h2'
+
+    // --- MapStruct ---
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    // Configuración para que MapStruct vea los getters/setters generados por Lombok
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // --- Utilidades opcionales ---
     implementation 'org.modelmapper:modelmapper:3.2.0' // si querés mapear DTOs fácilmente

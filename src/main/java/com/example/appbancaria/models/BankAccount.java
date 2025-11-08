@@ -25,7 +25,7 @@ public class BankAccount {
     private Double balance = 0.0;
 
     @Column(nullable = false)
-    private String status = "ACTIVE";
+    private String status;
 
     private Instant createdAt = Instant.now();
 }

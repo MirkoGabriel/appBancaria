@@ -7,11 +7,13 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BankAccountRequestApiDTO {
+public class BankAccountRequestDTO {
     @NotBlank
     private String accountNumber;
     @NotBlank
     private String ownerName;
     @NotNull
     private Double balance;
+    @NotBlank
+    private String status;
 }

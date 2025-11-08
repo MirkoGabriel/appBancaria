@@ -1,7 +1,9 @@
 package com.example.appbancaria.controller;
 
-import com.example.appbancaria.models.BankAccount;
+import com.example.appbancaria.dto.BankAccountDTO;
+import com.example.appbancaria.dto.BankAccountRequestDTO;
 import com.example.appbancaria.service.BankAccountService;
+import jakarta.validation.Valid;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -23,28 +25,28 @@ public class BankAccountController {
     }
 
     @PostMapping
-    public ResponseEntity<BankAccount> create(
-            @RequestBody BankAccount acc) {
-        BankAccount created = service.create(acc);
+    public ResponseEntity<BankAccountDTO> create(
+            @Valid @RequestBody BankAccountRequestDTO requestDto) {
+        BankAccountDTO created = service.create(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
-    public BankAccount get(
+    public BankAccountDTO get(
             @PathVariable Long id) {
         return service.getById(id);
     }
 
     @GetMapping
-    public List<BankAccount> list() {
+    public List<BankAccountDTO> list() {
         return service.getAll();
     }
 
     @PutMapping("/{id}")
-    public BankAccount update(
+    public BankAccountDTO update(
             @PathVariable Long id,
-            @RequestBody BankAccount acc) {
-        return service.update(id, acc);
+            @Valid @RequestBody BankAccountRequestDTO requestDto) {
+        return service.update(id, requestDto);
     }
 
     @DeleteMapping("/{id}")
@@ -55,13 +57,13 @@ public class BankAccountController {
     }
 
     @GetMapping("/self-call/list")
-    public ResponseEntity<List<BankAccount>> selfCall() {
+    public ResponseEntity<List<BankAccountDTO>> selfCall() {
         String url = "http://localhost:8080/api/accounts";
-        ResponseEntity<List<BankAccount>> response = restTemplate.exchange(
+        ResponseEntity<List<BankAccountDTO>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<BankAccount>>() {}
+                new ParameterizedTypeReference<List<BankAccountDTO>>() {}
         );
         return ResponseEntity.ok(response.getBody());
     }

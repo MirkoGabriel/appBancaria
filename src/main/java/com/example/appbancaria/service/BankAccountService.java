@@ -1,7 +1,10 @@
 package com.example.appbancaria.service;
 
+import com.example.appbancaria.dto.BankAccountDTO;
+import com.example.appbancaria.dto.BankAccountRequestDTO;
 import com.example.appbancaria.exception.DuplicateResourceException;
 import com.example.appbancaria.exception.ResourceNotFoundException;
+import com.example.appbancaria.mapper.BankAccountMapper;
 import com.example.appbancaria.models.BankAccount;
 import com.example.appbancaria.repository.BankAccountRepository;
 import org.springframework.stereotype.Service;
@@ -11,42 +14,60 @@ import java.util.List;
 @Service
 public class BankAccountService {
     private final BankAccountRepository repo;
+    private final BankAccountMapper mapper;
 
-    public BankAccountService(BankAccountRepository repo) {
+    public BankAccountService(BankAccountRepository repo, BankAccountMapper mapper) {
         this.repo = repo;
+        this.mapper = mapper;
     }
 
-    public BankAccount create(BankAccount acc) {
+    public BankAccountDTO create(BankAccountRequestDTO requestDto) {
+        BankAccount acc = mapper.toEntity(requestDto);
+        
         if (repo.existsByAccountNumber(acc.getAccountNumber())) {
             throw new DuplicateResourceException("Account number already exists: " + acc.getAccountNumber());
         }
-        return repo.save(acc);
+        
+        BankAccount saved = repo.save(acc);
+        return mapper.toDto(saved);
     }
 
-    public BankAccount getById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
+    public BankAccountDTO getById(Long id) {
+        BankAccount entity = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
+
+        return mapper.toDto(entity);
     }
 
-    public List<BankAccount> getAll() {
-        return repo.findAll();
+    public List<BankAccountDTO> getAll() {
+        List<BankAccount> entities = repo.findAll();
+        return mapper.toDtoList(entities);
     }
 
-    public BankAccount update(Long id, BankAccount update) {
-        BankAccount existing = getById(id);
+    public BankAccountDTO update(Long id, BankAccountRequestDTO requestDto) {
+        BankAccount existing = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
+        
+        BankAccount update = mapper.toEntity(requestDto);
+        
         if (!existing.getAccountNumber().equals(update.getAccountNumber())
                 && repo.existsByAccountNumber(update.getAccountNumber())) {
             throw new DuplicateResourceException("Account number already exists: " + update.getAccountNumber());
         }
+        
         existing.setOwnerName(update.getOwnerName());
         existing.setBalance(update.getBalance());
         existing.setAccountNumber(update.getAccountNumber());
         existing.setStatus(update.getStatus());
-        return repo.save(existing);
+        
+        BankAccount saved = repo.save(existing);
+        return mapper.toDto(saved);
     }
 
     public void delete(Long id) {
-        BankAccount e = getById(id);
-        repo.delete(e);
+        BankAccount entity = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
+        repo.delete(entity);
     }
 
 }

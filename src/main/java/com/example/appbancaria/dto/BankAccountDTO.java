@@ -1,15 +1,22 @@
 package com.example.appbancaria.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
 
 @Data
 @Builder
-public class BankAccountDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class BankAccountDTO {
     private Long id;
     private String accountNumber;
     private String ownerName;
     private Double balance;
     private String status;
-    private String createdAt;
+    private Instant createdAt;
 }
+

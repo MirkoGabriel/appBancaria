@@ -1,7 +1,7 @@
 package com.example.appbancaria.service;
 
+import com.example.appbancaria.dto.BankAccountRequestDTO;
 import com.example.appbancaria.exception.DuplicateResourceException;
-import com.example.appbancaria.models.BankAccount;
 import com.example.appbancaria.repository.BankAccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,16 +23,18 @@ public class BankAccountServiceTest {
 
     @Test
     void create_duplicate_throws() {
-        BankAccount a = new BankAccount();
-        a.setAccountNumber("A1");
-        a.setOwnerName("X");
-        a.setBalance(10.0);
+        BankAccountRequestDTO a = BankAccountRequestDTO.builder()
+                .accountNumber("A1")
+                .ownerName("X")
+                .balance(10.0)
+                .build();
         service.create(a);
 
-        BankAccount b = new BankAccount();
-        b.setAccountNumber("A1");
-        b.setOwnerName("Y");
-        b.setBalance(5.0);
+        BankAccountRequestDTO b = BankAccountRequestDTO.builder()
+                .accountNumber("A1")
+                .ownerName("Y")
+                .balance(5.0)
+                .build();
 
         assertThrows(DuplicateResourceException.class, () -> service.create(b));
     }
